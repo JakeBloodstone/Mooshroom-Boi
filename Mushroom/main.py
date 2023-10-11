@@ -1,4 +1,5 @@
 import pygame
+from player import Player  # Import the Player class from player.py
 
 pygame.init()
 
@@ -16,18 +17,8 @@ pygame.display.set_caption("MAARIOOOOO")
 ground_color = (0, 128, 0)  # Green color (RGB)
 ground_rect = pygame.Rect(0, window_height - 20, window_width, 20)  # 20 is the ground height
 
-# Define the character (a simple rectangle)
-character_color = (255, 0, 0)  # Red color (RGB)
-character_rect = pygame.Rect(50, window_height - 50 - 20, 50, 50)  # Character dimensions
-
-# Character variables
-character_speed = 5.0  # Adjust the speed as needed
-character_x = character_rect.x
-character_y = character_rect.y
-character_y_speed = 0 #Initialize character's vertical speed
-gravity = 0.5  # Adjust gravity as needed
-jump_force = -10  # Adjust jump force as needed
-is_jumping = False
+# Create a player object
+player = Player(50, window_height - 50 - 20, 50, 50, window_height)
 
 clock = pygame.time.Clock()  # Initialize Pygame's clock
 
@@ -39,34 +30,26 @@ while running:
 
     # Game logic
     keys = pygame.key.get_pressed()
+
+    # Handle player movement
     if keys[pygame.K_LEFT]:
-        character_x -= character_speed
+        player.move_left()
     if keys[pygame.K_RIGHT]:
-        character_x += character_speed
+        player.move_right()
 
-    # Jumping logic
-    if keys[pygame.K_SPACE] and not is_jumping:
-        character_y_speed = jump_force
-        is_jumping = True
+    # Handle player jumping
+    if keys[pygame.K_UP]:
+        player.jump()
 
-    # Apply gravity
-    character_y_speed += gravity
-    character_y += character_y_speed
+    # Update the player
+    player.update()
 
-    # Collision with the ground
-    if character_y >= window_height - 50 - 20:  # Adjust the collision condition
-        character_y = window_height - 50 - 20  # Reset character to ground level
-        character_y_speed = 0
-        is_jumping = False
-
-    # Update the character's rectangle position
-    character_rect.x = character_x
-    character_rect.y = character_y
+    pygame.draw.rect(screen, player.color, player.get_rect())  # Draw the player
 
     # Rendering
     screen.fill((0, 0, 0))  # Clear the screen
     pygame.draw.rect(screen, ground_color, ground_rect)  # Draw the ground
-    pygame.draw.rect(screen, character_color, character_rect)  # Draw the character
+    pygame.draw.rect(screen, player.color, player.rect)  # Draw the player
 
     pygame.display.update()  # Update the window
 
